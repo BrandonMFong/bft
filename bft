@@ -1,0 +1,117 @@
+#!/usr/bin/python3
+
+__author__ = "brando"
+__date__ = "12/2/24"
+
+import argparse # https://docs.python.org/3/library/argparse.html
+import sys
+import os
+import requests
+import json
+
+SCRIPT_NAME = sys.argv[0]
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+VERBOSE = True
+
+def bft_print(buf):
+    if VERBOSE:
+        print(buf)
+
+def bft_reg_url():
+    return "https://raw.githubusercontent.com/BrandonMFong/bft-buckets/refs/heads/dev/buckets/"
+
+class Bucket():
+    def __init__(self, name):
+        self._name = name
+        self.__get_meta()
+
+    def __get_meta(self):
+        url = bft_reg_url() + self._name + ".json"
+        bft_print("downloading bucket description from url {}".format(url))
+        response = requests.get(url)
+        if response.status_code != 200:
+            raise Exception("status code {}".format(response.status_code))
+        
+        bft_print("bucket content:")
+        self._meta_bucket = response.json()
+        bft_print(json.dumps(self._meta_bucket, indent=4))
+
+        meta_url = response.json()["meta"]
+        response = requests.get(meta_url)
+        bft_print("downloading bucket metadata from url {}".format(meta_url))
+        if response.status_code != 200:
+            raise Exception("status code {}".format(response.status_code))
+ 
+        bft_print("meta data:")
+        self._meta_github_release = response.json()
+        bft_print(json.dumps(self._meta_github_release, indent=4))
+
+    def tag_name(self):
+        return self._meta_github_release["tag_name"]
+
+    def name(self):
+        return self._name
+
+    def __url_package(self):
+        platform = "linux"
+        return self._meta_bucket["download"][platform]
+
+    def download(self, target_dir):
+        bft_print("downloading to target_dir {}...".format(target_dir))
+        tmp_dir = target_dir + "/tmp"
+        create_dir(tmp_dir)
+
+        url = self.__url_package()
+        tmp_file = tmp_dir + "/" + os.path.basename(url)
+        bft_print("downloading {} to {}".format(
+            url, tmp_file
+        ))
+
+        bft_print("fetching {}".format(url))
+        response = requests.get(url)
+        if response.status_code != 200:
+            raise Exception("status code {}".format(response.status_code))
+
+        with open(tmp_file, mode="wb") as file:
+            file.write(response.content)
+
+def create_dir(d):
+    bft_print("creating directory '{}'".format(d))
+    try:
+        os.mkdir(d)
+    except:
+        pass
+
+def install_exec(args):
+    bft_print("installing...")
+    bft_print("bucket to install {}".format(args.buckets))
+    for bucket_name in args.buckets:
+        remote_bucket = Bucket(bucket_name)
+        bft_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
+        
+        target_dir = SCRIPT_PATH + "/pool"
+        create_dir(target_dir)
+
+        remote_bucket.download(target_dir)
+
+def arguments_read():
+    parser = argparse.ArgumentParser(
+        prog=SCRIPT_NAME,
+        description='Bucket Fetcher Tool',
+        epilog='Copyright © 2024 Brando. All rights reserved.'
+    )
+
+    parser.add_argument('install', help='installs bucket')
+    parser.add_argument('buckets', nargs=1, help='name of the bucket to install')
+
+    return parser.parse_args()
+
+def main():
+    args = arguments_read()
+    bft_print(args)
+    if args.install:
+        install_exec(args)
+
+if __name__ == "__main__":
+    main()
+
