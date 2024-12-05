@@ -9,16 +9,23 @@ import os
 import requests
 import json
 import tarfile
+import platform
 
 SCRIPT_NAME = sys.argv[0]
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 VERBOSE = True
 
 def debug_print(buf):
+    """
+    conditional print on verbose flag
+    """
     if VERBOSE:
         print(buf)
 
 def bft_reg_url():
+    """
+    raw root folder to buckets
+    """
     return "https://raw.githubusercontent.com/BrandonMFong/bft-buckets/refs/heads/dev/buckets/"
 
 class Package():
@@ -29,13 +36,18 @@ class Package():
         self._file_path = file_path
 
     def extract(self, target_dir):
-        debug_print("extractping {} to {}".format(self._file_path, target_dir))
+        """
+        extracts everything in the package file
+        """
+        debug_print("extracting {} to {}".format(self._file_path, target_dir))
         if self._file_path.endswith("tar.gz"):
             debug_print("identified as a tar.gz file")
             tar = tarfile.open(self._file_path, "r:gz")
             debug_print(tar.getmembers())
             tar.extractall(path=target_dir)
             tar.close()
+        elif self._file_path.endswith(".dmg"):
+            pass # TODO
 
 class BucketMeta():
     """
@@ -46,6 +58,10 @@ class BucketMeta():
         self.__get_meta()
 
     def __get_meta(self):
+        """
+        compiles all the meta data from the bft-buckets buckets directory and
+        every buckets' meta url
+        """
         url = self._bucket_file_url
         debug_print("downloading bucket description from url {}".format(url))
         response = requests.get(url)
@@ -67,34 +83,66 @@ class BucketMeta():
         debug_print(json.dumps(self._meta_github_release, indent=4))
 
     def tag_name(self):
+        """
+        returns tag_name from the github latest release api
+        """
         return self._meta_github_release["tag_name"]
 
     def __platform(self):
-        return "linux"
+        """
+        returns the download's subkey that determines
+        what package to download for the current platform
+        """
+        if platform.system() == "Linux":
+            return "linux"
+        elif platform.system() == "Darwin":
+            return "macos"
 
     def url_package(self):
+        """
+        download url
+        """
         platform = self.__platform()
         return self._meta_bucket["download"][platform]["url"]
 
     def package_items(self):
+        """
+        items from the package we are extracting
+        """
         platform = self.__platform()
         return self._meta_bucket["download"][platform]["items"]
 
 class Bucket():
+    """
+    A bucket is the package that we are installing/updating
+    """
     def __init__(self, name):
         self._name = name
         self._meta = BucketMeta(bft_reg_url() + self._name + ".json")
 
     def tag_name(self):
+        """
+        returns the tag_name set for the release
+        """
         return self._meta.tag_name()
 
     def name(self):
+        """
+        name of the bucket. Usually the basename of the
+        bucket file without the extension
+        """
         return self._name
 
     def __url_package(self):
+        """
+        the url entry under meta
+        """
         return self._meta.url_package()
 
     def download(self, target_dir):
+        """
+        downloads the package
+        """
         # create tmp directory we are downloading to
         debug_print("downloading to target_dir {}...".format(target_dir))
         tmp_dir = os.path.join(target_dir, "tmp")
@@ -133,6 +181,9 @@ class Bucket():
             os.rename(src, dest)
 
 def create_dir(d):
+    """
+    creates directory if it doesn't exist
+    """
     debug_print("creating directory '{}'".format(d))
     try:
         os.mkdir(d)
@@ -140,6 +191,9 @@ def create_dir(d):
         pass
 
 def install_exec(args):
+    """
+    does installation
+    """
     debug_print("installing...")
     debug_print("bucket to install {}".format(args.buckets))
     for bucket_name in args.buckets:
@@ -152,6 +206,9 @@ def install_exec(args):
         remote_bucket.download(target_dir)
 
 def arguments_read():
+    """
+    reads arguments
+    """
     parser = argparse.ArgumentParser(
         prog=SCRIPT_NAME,
         description='Bucket Fetcher Tool',
