@@ -4,7 +4,8 @@
 	[] download from given url
 	[] read release version from the url
 	[] tool install <bucket>
-		[] download binary to an output folder
+		[x] download binary to an output folder
+		[] install other tools
 	[] tool update <bucket>
 [] make a separate repo as a registry
 ```
