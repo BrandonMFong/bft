@@ -1,4 +1,4 @@
 # Bucket Fetcher Tool
 
-## Registry of support software
+## Registry of supported software
 https://github.com/BrandonMFong/bft-buckets
