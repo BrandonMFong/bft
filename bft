@@ -10,6 +10,7 @@ import requests
 import json
 import tarfile
 import platform
+import shutil
 
 SCRIPT_NAME = sys.argv[0]
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -64,7 +65,8 @@ class BucketMeta():
         """
         url = self._bucket_file_url
         debug_print("downloading bucket description from url {}".format(url))
-        response = requests.get(url)
+        headers = {'Cache-Control': 'no-cache'}
+        response = requests.get(url, headers=headers)
         if response.status_code != 200:
             raise Exception("status code {}".format(response.status_code))
         
@@ -73,7 +75,7 @@ class BucketMeta():
         debug_print(json.dumps(self._meta_bucket, indent=4))
 
         meta_url = response.json()["meta"]["url"]
-        response = requests.get(meta_url)
+        response = requests.get(meta_url, headers=headers)
         debug_print("downloading bucket metadata from url {}".format(meta_url))
         if response.status_code != 200:
             raise Exception("status code {}".format(response.status_code))
@@ -146,6 +148,7 @@ class Bucket():
         # create tmp directory we are downloading to
         debug_print("downloading to target_dir {}...".format(target_dir))
         tmp_dir = os.path.join(target_dir, "tmp")
+        shutil.rmtree(tmp_dir, ignore_errors=True)
         create_dir(tmp_dir)
 
         # get the url we are downloading from
@@ -158,7 +161,8 @@ class Bucket():
         # get the object from url
         # fetch with progress
         debug_print("fetching {}".format(url))
-        response = requests.get(url)
+        headers = {'Cache-Control': 'no-cache'}
+        response = requests.get(url, headers=headers)
         if response.status_code != 200:
             raise Exception("status code {}".format(response.status_code))
 
