@@ -1,5 +1,4 @@
-```
-0.1
+**0.1**
 - [ ] install a package
 	- [ ] download from given url
 	- [ ] read release version from the url
@@ -9,4 +8,3 @@
 	- [ ] tool update <bucket>
 		- [ ] check for updates
 - [ ] make a separate repo as a registry
-```
