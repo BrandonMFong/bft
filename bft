@@ -229,6 +229,8 @@ def arguments_read():
 
     parser.add_argument('install', help='installs bucket')
     parser.add_argument('buckets', nargs=1, help='name of the bucket to install')
+    
+    #parser.add_argument('list', help='list available buckets')
 
     return parser.parse_args()
 
