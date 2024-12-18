@@ -11,6 +11,7 @@ import json
 import tarfile
 import platform
 import shutil
+import dmglib
 
 SCRIPT_NAME = sys.argv[0]
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -48,7 +49,14 @@ class Package():
             tar.extractall(path=target_dir)
             tar.close()
         elif self._file_path.endswith(".dmg"):
-            pass # TODO
+            dmg = dmglib.DiskImage(self._file_path)
+            if dmg.has_license_agreement():
+                raise Exception("cannot open {}".format(self._file_path))
+
+            for mount_point in dmg.attach():
+                shutil.copytree(mount_point, os.path.join(target_dir, os.path.basename(mount_point)))
+
+            dmg.detach()
 
 class BucketMeta():
     """
