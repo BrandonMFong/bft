@@ -9,3 +9,4 @@
 	- [ ] check for updates
 - [ ] ability to list available packages
 - [x] make a separate repo as a registry
+- [ ] verbose argument

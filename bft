@@ -302,6 +302,8 @@ def install_exec(args):
 
         remote_bucket.save(pool_dir)
 
+        debug_print("installed {}".format(bucket_name))
+
 def list_exec(args):
     """
     lists available buckets and if they are installed
