@@ -13,9 +13,20 @@ import platform
 import shutil
 import dmglib
 
-SCRIPT_NAME = sys.argv[0]
+SCRIPT_NAME = os.path.basename(sys.argv[0])
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 VERBOSE = True
+
+class Argument():
+    def __init__(self, commands, description):
+        """
+        commands : a list of acceptable commands. where the first will be the recommended arg to use
+        """
+        self.commands = commands
+        self.description = description
+
+ARG_INSTALL = Argument(["install"], "installs tool")
+ARG_LIST = Argument(["list"], "lists available and installed content")
 
 def debug_print(buf):
     """
@@ -23,6 +34,38 @@ def debug_print(buf):
     """
     if VERBOSE:
         print(buf)
+
+class Arguments():
+    def print_help():
+        print("usage: {} <command> [<args>]".format(SCRIPT_NAME))
+        print()
+        print("command:")
+        print(" {}\t{}".format(ARG_INSTALL.commands[0], ARG_INSTALL.description)) 
+        print(" {}\t\t{}".format(ARG_LIST.commands[0], ARG_LIST.description)) 
+        print()
+        print("Copyright © 2024 Brando. All rights reserved.")
+
+    def __init__(self):
+        self._install = False
+        self._list = False
+        for arg in sys.argv:
+            if arg in ARG_INSTALL.commands:
+                self._install = True
+            elif arg in ARG_LIST.commands:
+                self._list = True
+
+    def show_help(self):
+        #return self._install is False and self._list is False
+        return len(sys.argv) == 1
+
+    def do_list(self):
+        return self._list
+
+    def do_install(self):
+        return self._install
+
+    def install_target(self):
+        return [sys.argv[len(sys.argv) - 1]]
 
 def bft_reg_url():
     """
@@ -207,8 +250,9 @@ def install_exec(args):
     does installation
     """
     debug_print("installing...")
-    debug_print("bucket to install {}".format(args.buckets))
-    for bucket_name in args.buckets:
+    debug_print("bucket to install {}".format(args.install_target))
+    #for bucket_name in args.buckets:
+    for bucket_name in args.install_target():
         remote_bucket = Bucket(bucket_name)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
         
@@ -230,14 +274,16 @@ def arguments_read():
     parser.add_argument('install', help='installs bucket')
     parser.add_argument('buckets', nargs=1, help='name of the bucket to install')
     
-    #parser.add_argument('list', help='list available buckets')
+    parser.add_argument('list', help='list available buckets')
 
     return parser.parse_args()
 
 def main():
-    args = arguments_read()
-    debug_print(args)
-    if args.install:
+    args = Arguments()
+    
+    if args.show_help():
+        Arguments.print_help()
+    elif args.do_install():
         install_exec(args)
 
 if __name__ == "__main__":
