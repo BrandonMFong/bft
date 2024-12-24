@@ -33,7 +33,7 @@ def debug_print(buf):
     conditional print on verbose flag
     """
     if VERBOSE:
-        print(buf)
+        print("bft> {}".format(buf))
 
 class Arguments():
     def print_help():
@@ -80,6 +80,9 @@ def bft_reg_url():
     raw root folder to buckets
     """
     return "https://raw.githubusercontent.com/BrandonMFong/bft-buckets/refs/heads/dev/buckets/"
+
+def bft_api_list_repo():
+    return "https://api.github.com/repos/BrandonMFong/bft-buckets/git/trees/dev?recursive=1"
 
 class Package():
     """
@@ -309,6 +312,21 @@ def list_exec(args):
     lists available buckets and if they are installed
     """
     debug_print("listing...")
+    url = bft_api_list_repo()
+    headers = {'Cache-Control': 'no-cache'}
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        raise Exception("status code {}".format(response.status_code))
+
+    repo_tree_json = response.json()
+    debug_print("raw bft-buckets repo tree:")
+    debug_print(json.dumps(repo_tree_json, indent=4))
+
+    debug_print("going through the buckets directory from remote repo")
+    for item in repo_tree_json["tree"]:
+        path = item["path"]
+        if os.path.dirname(path) == "buckets":
+            debug_print("relative path: '{}'".format(path))
 
 def main():
     args = Arguments()
