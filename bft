@@ -200,13 +200,13 @@ class Bucket():
         """
         return self._meta.url_package()
 
-    def download(self, target_dir):
+    def download(self, pool_dir):
         """
         downloads the package
         """
         # create tmp directory we are downloading to
-        debug_print("downloading to target_dir {}...".format(target_dir))
-        tmp_dir = os.path.join(target_dir, "tmp")
+        debug_print("downloading to pool_dir {}...".format(pool_dir))
+        tmp_dir = os.path.join(pool_dir, "tmp")
         shutil.rmtree(tmp_dir, ignore_errors=True)
         create_dir(tmp_dir)
 
@@ -235,13 +235,16 @@ class Bucket():
         # extract items from package file
         bucket_pkg = Package(tmp_file)
         bucket_pkg.extract(tmp_dir)
-        bin_dir = os.path.join(target_dir, "bin")
+        bin_dir = os.path.join(pool_dir, "bin")
         create_dir(bin_dir)
         for item in self._meta.package_items():
             src = os.path.join(tmp_dir, item)
             dest = os.path.join(bin_dir, os.path.basename(item))
             debug_print("{} -> {}".format(src, dest))
             os.rename(src, dest)
+
+    def save(self):
+        debug_print("saving bucket")
 
 def create_dir(d):
     """
@@ -263,10 +266,12 @@ def install_exec(args):
         remote_bucket = Bucket(bucket_name)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
         
-        target_dir = SCRIPT_PATH + "/pool"
-        create_dir(target_dir)
+        pool_dir = SCRIPT_PATH + "/pool"
+        create_dir(pool_dir)
 
-        remote_bucket.download(target_dir)
+        remote_bucket.download(pool_dir)
+
+        remote_bucket.save()
 
 def list_exec(args):
     """
