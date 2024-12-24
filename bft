@@ -254,6 +254,10 @@ class Bucket():
             os.rename(src, dest)
 
     def save(self, pool_dir):
+        """
+        saves the bucket json file to .installed directory
+        in the pool directory
+        """
         debug_print("saving bucket")
         installed_dir = os.path.join(pool_dir, ".installed")
         create_dir(installed_dir)
