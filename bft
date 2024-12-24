@@ -64,8 +64,18 @@ class Arguments():
     def do_install(self):
         return self._install
 
-    def install_target(self):
-        return [sys.argv[len(sys.argv) - 1]]
+    def install_targets(self):
+        accept = False
+        def get_install_targets(arg):
+            nonlocal accept
+            if accept:
+                return True
+            else:
+                accept = arg in ARG_INSTALL.commands
+                return False
+
+        #return [sys.argv[len(sys.argv) - 1]]
+        return filter(get_install_targets, sys.argv)
 
 def bft_reg_url():
     """
@@ -250,9 +260,9 @@ def install_exec(args):
     does installation
     """
     debug_print("installing...")
-    debug_print("bucket to install {}".format(args.install_target))
+    debug_print("bucket to install {}".format(args.install_targets))
     #for bucket_name in args.buckets:
-    for bucket_name in args.install_target():
+    for bucket_name in args.install_targets():
         remote_bucket = Bucket(bucket_name)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
         
