@@ -117,6 +117,9 @@ class BucketMeta():
         self._bucket_file_url = bucket_file_url
         self.__get_meta()
 
+    def bucket_file_url(self):
+        return self._bucket_file_url
+
     def __get_meta(self):
         """
         compiles all the meta data from the bft-buckets buckets directory and
@@ -142,6 +145,13 @@ class BucketMeta():
         debug_print("meta data:")
         self._meta_github_release = response.json()
         debug_print(json.dumps(self._meta_github_release, indent=4))
+
+    def meta_bucket(self):
+        """
+        json object holding objects like the ones here:
+        https://github.com/BrandonMFong/bft-buckets/tree/dev/buckets
+        """
+        return self._meta_bucket
 
     def tag_name(self):
         """
@@ -243,8 +253,23 @@ class Bucket():
             debug_print("{} -> {}".format(src, dest))
             os.rename(src, dest)
 
-    def save(self):
+    def save(self, pool_dir):
         debug_print("saving bucket")
+        installed_dir = os.path.join(pool_dir, ".installed")
+        create_dir(installed_dir)
+        debug_print("saving bucket into dir {}".format(installed_dir))
+
+        meta_bucket_json_file = os.path.join(
+            installed_dir,
+            os.path.basename(self._meta.bucket_file_url())
+        )
+        
+        meta_bucket_json_content = json.dumps(self._meta.meta_bucket(), indent=4)
+
+        debug_print("preparing to write to file '{}':".format(meta_bucket_json_file))
+        debug_print(meta_bucket_json_content)
+        with open(meta_bucket_json_file, 'w') as f:
+            f.write(meta_bucket_json_content)
 
 def create_dir(d):
     """
@@ -271,7 +296,7 @@ def install_exec(args):
 
         remote_bucket.download(pool_dir)
 
-        remote_bucket.save()
+        remote_bucket.save(pool_dir)
 
 def list_exec(args):
     """
