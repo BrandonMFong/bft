@@ -55,7 +55,6 @@ class Arguments():
                 self._list = True
 
     def show_help(self):
-        #return self._install is False and self._list is False
         return len(sys.argv) == 1
 
     def do_list(self):
@@ -74,7 +73,6 @@ class Arguments():
                 accept = arg in ARG_INSTALL.commands
                 return False
 
-        #return [sys.argv[len(sys.argv) - 1]]
         return filter(get_install_targets, sys.argv)
 
 def bft_reg_url():
@@ -261,7 +259,6 @@ def install_exec(args):
     """
     debug_print("installing...")
     debug_print("bucket to install {}".format(args.install_targets))
-    #for bucket_name in args.buckets:
     for bucket_name in args.install_targets():
         remote_bucket = Bucket(bucket_name)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
@@ -271,22 +268,11 @@ def install_exec(args):
 
         remote_bucket.download(target_dir)
 
-def arguments_read():
+def list_exec(args):
     """
-    reads arguments
+    lists available buckets and if they are installed
     """
-    parser = argparse.ArgumentParser(
-        prog=SCRIPT_NAME,
-        description='Bucket Fetcher Tool',
-        epilog='Copyright © 2024 Brando. All rights reserved.'
-    )
-
-    parser.add_argument('install', help='installs bucket')
-    parser.add_argument('buckets', nargs=1, help='name of the bucket to install')
-    
-    parser.add_argument('list', help='list available buckets')
-
-    return parser.parse_args()
+    debug_print("listing...")
 
 def main():
     args = Arguments()
@@ -295,6 +281,8 @@ def main():
         Arguments.print_help()
     elif args.do_install():
         install_exec(args)
+    elif args.do_list():
+        list_exec(args)
 
 if __name__ == "__main__":
     main()
