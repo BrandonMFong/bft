@@ -7,5 +7,7 @@
 	- [x] support macos
 - [ ] tool update <bucket>
 	- [ ] check for updates
-- [ ] ability to list available packages
+- [x] ability to list available packages
 - [x] make a separate repo as a registry
+- [ ] verbose argument
+- [ ] improve list without fetching remote site
