@@ -15,7 +15,7 @@ import dmglib
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
-VERBOSE = True
+VERBOSE = False
 
 class Argument():
     def __init__(self, commands, description):
