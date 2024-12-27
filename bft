@@ -27,6 +27,7 @@ class Argument():
 
 ARG_INSTALL = Argument(["install"], "installs tool")
 ARG_LIST = Argument(["list"], "lists available and installed content")
+ARG_HELP = Argument(["help", "-h", "--help", "-help"], "shows help")
 
 def bft_print(buf):
     print("{}".format(buf))
@@ -45,20 +46,24 @@ class Arguments():
         print("command:")
         print(" {}\t{}".format(ARG_INSTALL.commands[0], ARG_INSTALL.description)) 
         print(" {}\t\t{}".format(ARG_LIST.commands[0], ARG_LIST.description)) 
+        print(" {}\t\t{}".format(ARG_HELP.commands[0], ARG_HELP.description)) 
         print()
         print("Copyright © 2024 Brando. All rights reserved.")
 
     def __init__(self):
         self._install = False
         self._list = False
+        self._show_help = False
         for arg in sys.argv:
             if arg in ARG_INSTALL.commands:
                 self._install = True
             elif arg in ARG_LIST.commands:
                 self._list = True
+            elif arg in ARG_HELP.commands:
+                self._show_help = True
 
     def show_help(self):
-        return len(sys.argv) == 1
+        return len(sys.argv) == 1 or self._show_help
 
     def do_list(self):
         return self._list
