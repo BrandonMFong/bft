@@ -33,7 +33,7 @@ def debug_print(buf):
     conditional print on verbose flag
     """
     if VERBOSE:
-        print("bft> {}".format(buf))
+        print("bft_debug> {}".format(buf))
 
 class Arguments():
     def print_help():
@@ -278,6 +278,17 @@ class Bucket():
         with open(meta_bucket_json_file, 'w') as f:
             f.write(meta_bucket_json_content)
 
+    def is_installed(self, pool_dir):
+        debug_print("checking if {} is installed".format(self.name()))
+        installed_dir = os.path.join(pool_dir, ".installed")
+
+        meta_bucket_json_file = os.path.join(
+            installed_dir,
+            os.path.basename(self._meta.bucket_file_url())
+        )
+
+        return os.path.isfile(meta_bucket_json_file)
+ 
 def create_dir(d):
     """
     creates directory if it doesn't exist
@@ -300,6 +311,10 @@ def install_exec(args):
         
         pool_dir = SCRIPT_PATH + "/pool"
         create_dir(pool_dir)
+
+        if remote_bucket.is_installed(pool_dir):
+            debug_print("{} is already installed".format(remote_bucket.name()))
+            continue
 
         remote_bucket.download(pool_dir)
 
@@ -327,6 +342,9 @@ def list_exec(args):
         path = item["path"]
         if os.path.dirname(path) == "buckets":
             debug_print("relative path: '{}'".format(path))
+            bucket_name = os.path.basename(path)
+            bucket_name = os.path.splitext(bucket_name)[0]
+            debug_print("  file name: '{}'".format(bucket_name))
 
 def main():
     args = Arguments()
