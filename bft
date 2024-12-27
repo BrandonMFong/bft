@@ -28,6 +28,9 @@ class Argument():
 ARG_INSTALL = Argument(["install"], "installs tool")
 ARG_LIST = Argument(["list"], "lists available and installed content")
 
+def bft_print(buf):
+    print("{}".format(buf))
+
 def debug_print(buf):
     """
     conditional print on verbose flag
@@ -305,28 +308,34 @@ def install_exec(args):
     """
     debug_print("installing...")
     debug_print("bucket to install {}".format(args.install_targets))
+ 
+    pool_dir = SCRIPT_PATH + "/pool"
+    create_dir(pool_dir)
+
     for bucket_name in args.install_targets():
         remote_bucket = Bucket(bucket_name)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
-        
-        pool_dir = SCRIPT_PATH + "/pool"
-        create_dir(pool_dir)
-
+       
         if remote_bucket.is_installed(pool_dir):
-            debug_print("{} is already installed".format(remote_bucket.name()))
+            bft_print("{} is already installed".format(remote_bucket.name()))
             continue
 
         remote_bucket.download(pool_dir)
 
         remote_bucket.save(pool_dir)
 
-        debug_print("installed {}".format(bucket_name))
+        bft_print("installed {}".format(bucket_name))
+
+def list_exec_print_bucket(name, is_installed):
+    bft_print("{} {}".format(name, "(installed)" if is_installed else ""))
 
 def list_exec(args):
     """
     lists available buckets and if they are installed
     """
     debug_print("listing...")
+    pool_dir = SCRIPT_PATH + "/pool"
+    
     url = bft_api_list_repo()
     headers = {'Cache-Control': 'no-cache'}
     response = requests.get(url, headers=headers)
@@ -345,6 +354,12 @@ def list_exec(args):
             bucket_name = os.path.basename(path)
             bucket_name = os.path.splitext(bucket_name)[0]
             debug_print("  file name: '{}'".format(bucket_name))
+
+            remote_bucket = Bucket(bucket_name)
+            list_exec_print_bucket(
+                remote_bucket.name(),
+                remote_bucket.is_installed(pool_dir)
+            )
 
 def main():
     args = Arguments()
