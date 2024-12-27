@@ -3,7 +3,6 @@
 __author__ = "brando"
 __date__ = "12/2/24"
 
-import argparse # https://docs.python.org/3/library/argparse.html
 import sys
 import os
 import requests
