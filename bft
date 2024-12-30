@@ -115,6 +115,9 @@ def bft_reg_url():
     return "https://raw.githubusercontent.com/BrandonMFong/bft-buckets/refs/heads/dev/buckets/"
 
 def bft_api_list_repo():
+    """
+    https://docs.github.com/en/rest/git/trees?apiVersion=2022-11-28#get-a-tree
+    """
     return "https://api.github.com/repos/BrandonMFong/bft-buckets/git/trees/dev?recursive=1"
 
 class Package():
@@ -177,9 +180,10 @@ class BucketMeta():
         meta_url = response.json()["meta"]["url"]
         response = requests.get(meta_url, headers=headers)
         debug_print("downloading bucket metadata from url {}".format(meta_url))
-        if response.status_code != 200:
-            raise Exception("status code {}".format(response.status_code))
- 
+        if response.status_code != requests.codes.ok:
+            response.raise_for_status()
+
+
         debug_print("meta data:")
         self._meta_github_release = response.json()
         debug_print(json.dumps(self._meta_github_release, indent=4))
