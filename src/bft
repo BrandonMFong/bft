@@ -13,6 +13,7 @@ import shutil
 import dmglib
 
 from arguments import *
+from utils import *
 
 ARGS = Arguments()
 
@@ -78,12 +79,10 @@ class BucketMeta():
     """
     def __init__(self, bucket_file_url):
         self._bucket_file_url = bucket_file_url
-        #self.__get_meta()
 
     def bucket_file_url(self):
         return self._bucket_file_url
 
-    #def __get_meta(self):
     def get_meta(self):
         """
         compiles all the meta data from the bft-buckets buckets directory and
@@ -320,7 +319,8 @@ def install_exec():
     debug_print("installing...")
     debug_print("bucket to install {}".format(ARGS.install_targets))
  
-    pool_dir = SCRIPT_PATH + "/pool"
+    #pool_dir = SCRIPT_PATH + "/pool"
+    pool_dir = get_pool_dir()
     create_dir(pool_dir)
 
     for bucket_name in ARGS.install_targets():
@@ -348,7 +348,8 @@ def list_exec():
     lists available buckets and if they are installed
     """
     debug_print("listing...")
-    pool_dir = SCRIPT_PATH + "/pool"
+    #pool_dir = SCRIPT_PATH + "/pool"
+    pool_dir = get_pool_dir()
 
     # fetch the repo tree
     url = bft_api_list_repo()
@@ -386,7 +387,8 @@ def update_exec():
     overwriting the content
     """
     debug_print("updating...")
-    pool_dir = SCRIPT_PATH + "/pool"
+    #pool_dir = SCRIPT_PATH + "/pool"
+    pool_dir = get_pool_dir()
     create_dir(pool_dir)
 
     for bucket_name in ARGS.update_targets():
