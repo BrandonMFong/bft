@@ -362,11 +362,8 @@ class Bucket():
 
         return False
 
-    def update(self, pool_dir):
-        """
-        uninstall and installs update
-        """
-        debug_print("doing update")
+    def uninstall(self, pool_dir):
+        debug_print("uninstalling...")
  
 def create_dir(d):
     """
@@ -440,6 +437,10 @@ def list_exec(args):
 def update_exec(args):
     """
     performs an update on the update targets
+
+    we perform an update by doing things similar to
+    installation: download and save. Essentially
+    overwriting the content
     """
     debug_print("updating...")
     pool_dir = SCRIPT_PATH + "/pool"
@@ -451,16 +452,19 @@ def update_exec(args):
        
         if remote_bucket.is_installed(pool_dir) is False:
             bft_print(
-                "{} is not installed. Please use the '{}' argument".format(
-                    remote_bucket.name(),
-                    ARG_INSTALL.commands[0]
+                "{} - not installed".format(
+                    remote_bucket.name()
             ))
             continue
 
         if remote_bucket.can_update(pool_dir):
-            remote_bucket.update(pool_dir)
+            remote_bucket.download(pool_dir)
+
+            remote_bucket.save(pool_dir)
+
+            bft_print("{} - updated".format(bucket_name))
         else:
-            bft_print("'{}' is up to date".format(
+            bft_print("{} - up to date".format(
                 remote_bucket.name()
             ))
 
