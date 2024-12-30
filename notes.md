@@ -1,1 +1,2 @@
 - a package will be nicknamed, bucket
+- to check for github api current rate limit: `curl -L https://api.github.com/rate_limit`
