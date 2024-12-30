@@ -321,6 +321,14 @@ class Bucket():
         )
 
         return os.path.isfile(meta_bucket_json_file)
+
+    def can_update(self, pool_dir):
+        debug_print("checking if {} is can be updated".format(self.name()))
+
+        return False
+
+    def update(self, pool_dir):
+        debug_print("doing update")
  
 def create_dir(d):
     """
@@ -392,6 +400,9 @@ def list_exec(args):
             )
 
 def update_exec(args):
+    """
+    performs an update on the update targets
+    """
     debug_print("updating...")
     pool_dir = SCRIPT_PATH + "/pool"
     create_dir(pool_dir)
@@ -400,13 +411,20 @@ def update_exec(args):
         remote_bucket = Bucket(bucket_name)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
        
-        if remote_bucket.is_installed(pool_dir):
+        if remote_bucket.is_installed(pool_dir) is False:
             bft_print(
                 "{} is not installed. Please use the '{}' argument".format(
                     remote_bucket.name(),
                     ARG_INSTALL.commands[0]
             ))
             continue
+
+        if remote_bucket.can_update(pool_dir):
+            remote_bucket.update(pool_dir)
+        else:
+            bft_print("{} is up to date".format(
+                remote_bucket.name()
+            ))
 
 def main():
     args = Arguments()
