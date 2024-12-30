@@ -1,9 +1,9 @@
 **x.x**
-- [ ] verbose argument
 - [ ] improve list without fetching remote site
 - [ ] include packages from other developers
 
 **0.1**
+- [x] verbose argument
 - [x] install a package
 	- [x] download from given url
 	- [x] read release version from the url
