@@ -141,7 +141,9 @@ class Package():
                 raise Exception("cannot open {}".format(self._file_path))
 
             for mount_point in dmg.attach():
-                shutil.copytree(mount_point, os.path.join(target_dir, os.path.basename(mount_point)))
+                shutil.copytree(mount_point, os.path.join(
+                    target_dir, os.path.basename(mount_point)
+                ))
 
             dmg.detach()
 
@@ -229,6 +231,7 @@ class Bucket():
 
     def tag_name(self):
         """
+        tag_name is the version
         returns the tag_name set for the release
         """
         return self._meta.tag_name()
@@ -289,6 +292,16 @@ class Bucket():
             debug_print("{} -> {}".format(src, dest))
             os.rename(src, dest)
 
+    def __meta_bucket_saved_content(self):
+        """
+        adds an 'installed' entry to cache some meta data before we fetch it
+        """
+        res = self._meta.meta_bucket()
+
+        res["installed"] = {"tag_name" : self.tag_name()}
+
+        return res
+
     def save(self, pool_dir):
         """
         saves the bucket json file to .installed directory
@@ -303,8 +316,10 @@ class Bucket():
             installed_dir,
             os.path.basename(self._meta.bucket_file_url())
         )
-        
-        meta_bucket_json_content = json.dumps(self._meta.meta_bucket(), indent=4)
+
+        meta_bucket_json_content = json.dumps(
+            self.__meta_bucket_saved_content(), indent=4
+        )
 
         debug_print("preparing to write to file '{}':".format(meta_bucket_json_file))
         debug_print(meta_bucket_json_content)
@@ -323,11 +338,34 @@ class Bucket():
         return os.path.isfile(meta_bucket_json_file)
 
     def can_update(self, pool_dir):
+        """
+        compares our tag_name with the saved tag_name in
+        the .installed directory
+        """
         debug_print("checking if {} is can be updated".format(self.name()))
+        installed_dir = os.path.join(pool_dir, ".installed")
+
+        meta_bucket_json_file = os.path.join(
+            installed_dir,
+            os.path.basename(self._meta.bucket_file_url())
+        )
+
+        if os.path.isfile(meta_bucket_json_file) is False:
+            raise Exception("{} does not exist".format(
+                meta_bucket_json_file
+            ))
+
+        with open(meta_bucket_json_file, 'r') as f:
+            data = json.load(f)
+            tag_name = data["installed"]["tag_name"]
+            return tag_name != self.tag_name()
 
         return False
 
     def update(self, pool_dir):
+        """
+        uninstall and installs update
+        """
         debug_print("doing update")
  
 def create_dir(d):
@@ -422,7 +460,7 @@ def update_exec(args):
         if remote_bucket.can_update(pool_dir):
             remote_bucket.update(pool_dir)
         else:
-            bft_print("{} is up to date".format(
+            bft_print("'{}' is up to date".format(
                 remote_bucket.name()
             ))
 

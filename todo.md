@@ -1,6 +1,7 @@
 **x.x**
 - [ ] improve list without fetching remote site
 - [ ] include packages from other developers
+- [ ] install specific versions
 
 **0.1**
 - [x] verbose argument
@@ -11,7 +12,8 @@
 	- [x] install other tools
 	- [x] support macos
 - [ ] tool update <bucket>
-	- [ ] check for updates
+	- [x] check for updates
+- [ ] uninstall
 - [x] ability to list available packages
 - [x] make a separate repo as a registry
 
