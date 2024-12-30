@@ -14,7 +14,7 @@ import dmglib
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
-VERBOSE = False
+VERBOSE = True 
 
 class Argument():
     def __init__(self, commands, description):
@@ -26,6 +26,7 @@ class Argument():
 
 ARG_INSTALL = Argument(["install"], "installs tool")
 ARG_LIST = Argument(["list"], "lists available and installed content")
+ARG_UPDATE = Argument(["update"], "updates target bucket")
 ARG_HELP = Argument(["help", "-h", "--help", "-help"], "shows help")
 
 def bft_print(buf):
@@ -51,11 +52,14 @@ class Arguments():
 
     def __init__(self):
         self._install = False
+        self._update = False
         self._list = False
         self._show_help = False
         for arg in sys.argv:
             if arg in ARG_INSTALL.commands:
                 self._install = True
+            elif arg in ARG_UPDATE.commands:
+                self._update = True
             elif arg in ARG_LIST.commands:
                 self._list = True
             elif arg in ARG_HELP.commands:
@@ -70,6 +74,9 @@ class Arguments():
     def do_install(self):
         return self._install
 
+    def do_update(self):
+        return self._update
+
     def install_targets(self):
         accept = False
         def get_install_targets(arg):
@@ -81,6 +88,18 @@ class Arguments():
                 return False
 
         return filter(get_install_targets, sys.argv)
+
+    def update_targets(self):
+        accept = False
+        def get_update_targets(arg):
+            nonlocal accept
+            if accept:
+                return True
+            else:
+                accept = arg in ARG_UPDATE.commands
+                return False
+
+        return filter(get_update_targets, sys.argv)
 
 def bft_reg_url():
     """
@@ -365,6 +384,9 @@ def list_exec(args):
                 remote_bucket.is_installed(pool_dir)
             )
 
+def update_exec(args):
+    debug_print("updating...")
+
 def main():
     args = Arguments()
     
@@ -372,6 +394,8 @@ def main():
         Arguments.print_help()
     elif args.do_install():
         install_exec(args)
+    elif args.do_update():
+        update_exec(args)
     elif args.do_list():
         list_exec(args)
 
