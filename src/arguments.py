@@ -88,3 +88,5 @@ class Arguments():
 
         return filter(get_update_targets, sys.argv)
 
+ARGS = Arguments()
+

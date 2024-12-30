@@ -15,12 +15,6 @@ import dmglib
 from arguments import *
 from utils import *
 
-ARGS = Arguments()
-
-# gets modified by Arguments() constructor when user
-# passes a verbose argument
-#VERBOSE = False
-
 def bft_print(buf):
     print("{}".format(buf))
 
@@ -370,7 +364,6 @@ def list_exec():
             debug_print("  file name: '{}'".format(bucket_name))
 
             remote_bucket = Bucket(bucket_name)
-            #remote_bucket.fetch()
             list_exec_print_bucket(
                 remote_bucket.name(),
                 remote_bucket.is_installed(pool_dir)
