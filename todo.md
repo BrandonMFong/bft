@@ -1,3 +1,8 @@
+**x.x**
+- [ ] verbose argument
+- [ ] improve list without fetching remote site
+- [ ] include packages from other developers
+
 **0.1**
 - [x] install a package
 	- [x] download from given url
@@ -9,5 +14,4 @@
 	- [ ] check for updates
 - [x] ability to list available packages
 - [x] make a separate repo as a registry
-- [ ] verbose argument
-- [ ] improve list without fetching remote site
+
