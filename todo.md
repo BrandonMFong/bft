@@ -14,6 +14,7 @@
 - [ ] tool update <bucket>
 	- [x] check for updates
 - [ ] uninstall
+- [ ] [authenticate user](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
 - [x] ability to list available packages
 - [x] make a separate repo as a registry
 
