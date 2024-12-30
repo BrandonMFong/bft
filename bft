@@ -14,7 +14,10 @@ import dmglib
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
-VERBOSE = True 
+
+# gets modified by Arguments() constructor when user
+# passes a verbose argument
+VERBOSE = False
 
 class Argument():
     def __init__(self, commands, description):
@@ -28,6 +31,7 @@ ARG_INSTALL = Argument(["install"], "installs tool")
 ARG_LIST = Argument(["list"], "lists available and installed content")
 ARG_UPDATE = Argument(["update"], "updates target bucket")
 ARG_HELP = Argument(["help", "-h", "--help", "-help"], "shows help")
+ARG_VERBOSE = Argument(["-v"], "shows more logging")
 
 def bft_print(buf):
     print("{}".format(buf))
@@ -51,6 +55,7 @@ class Arguments():
         print("Copyright © 2024 Brando. All rights reserved.")
 
     def __init__(self):
+        global VERBOSE
         self._install = False
         self._update = False
         self._list = False
@@ -64,6 +69,8 @@ class Arguments():
                 self._list = True
             elif arg in ARG_HELP.commands:
                 self._show_help = True
+            elif arg in ARG_VERBOSE.commands:
+                VERBOSE = True 
 
     def show_help(self):
         return len(sys.argv) == 1 or self._show_help
@@ -386,6 +393,20 @@ def list_exec(args):
 
 def update_exec(args):
     debug_print("updating...")
+    pool_dir = SCRIPT_PATH + "/pool"
+    create_dir(pool_dir)
+
+    for bucket_name in args.update_targets():
+        remote_bucket = Bucket(bucket_name)
+        debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
+       
+        if remote_bucket.is_installed(pool_dir):
+            bft_print(
+                "{} is not installed. Please use the '{}' argument".format(
+                    remote_bucket.name(),
+                    ARG_INSTALL.commands[0]
+            ))
+            continue
 
 def main():
     args = Arguments()
