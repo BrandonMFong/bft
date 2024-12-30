@@ -319,7 +319,6 @@ def install_exec():
     debug_print("installing...")
     debug_print("bucket to install {}".format(ARGS.install_targets))
  
-    #pool_dir = SCRIPT_PATH + "/pool"
     pool_dir = get_pool_dir()
     create_dir(pool_dir)
 
@@ -348,7 +347,6 @@ def list_exec():
     lists available buckets and if they are installed
     """
     debug_print("listing...")
-    #pool_dir = SCRIPT_PATH + "/pool"
     pool_dir = get_pool_dir()
 
     # fetch the repo tree
@@ -387,7 +385,6 @@ def update_exec():
     overwriting the content
     """
     debug_print("updating...")
-    #pool_dir = SCRIPT_PATH + "/pool"
     pool_dir = get_pool_dir()
     create_dir(pool_dir)
 
