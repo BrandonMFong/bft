@@ -14,6 +14,7 @@ class Argument():
         self.description = description
 
 ARG_INSTALL = Argument(["install"], "installs tool")
+ARG_UNINSTALL = Argument(["uninstall"], "uninstalls tool")
 ARG_LIST = Argument(["list"], "lists available and installed content")
 ARG_UPDATE = Argument(["update"], "updates target bucket")
 ARG_HELP = Argument(["help", "-h", "--help", "-help"], "shows help")
@@ -25,6 +26,8 @@ class Arguments():
         print()
         print("command:")
         print(" {}\t{}".format(ARG_INSTALL.commands[0], ARG_INSTALL.description)) 
+        print(" {}\t{}".format(ARG_UNINSTALL.commands[0], ARG_UNINSTALL.description)) 
+        print(" {}\t{}".format(ARG_UPDATE.commands[0], ARG_UPDATE.description)) 
         print(" {}\t\t{}".format(ARG_LIST.commands[0], ARG_LIST.description)) 
         print(" {}\t\t{}".format(ARG_HELP.commands[0], ARG_HELP.description)) 
         print()
@@ -33,6 +36,7 @@ class Arguments():
     def __init__(self):
         global VERBOSE
         self._install = False
+        self._uninstall = False
         self._update = False
         self._list = False
         self._show_help = False
@@ -40,6 +44,8 @@ class Arguments():
         for arg in sys.argv:
             if arg in ARG_INSTALL.commands:
                 self._install = True
+            elif arg in ARG_UNINSTALL.commands:
+                self._uninstall = True
             elif arg in ARG_UPDATE.commands:
                 self._update = True
             elif arg in ARG_LIST.commands:
@@ -61,6 +67,9 @@ class Arguments():
     def do_install(self):
         return self._install
 
+    def do_uninstall(self):
+        return self._uninstall
+
     def do_update(self):
         return self._update
 
@@ -75,6 +84,18 @@ class Arguments():
                 return False
 
         return filter(get_install_targets, sys.argv)
+
+    def uninstall_targets(self):
+        accept = False
+        def get_uninstall_targets(arg):
+            nonlocal accept
+            if accept:
+                return True
+            else:
+                accept = arg in ARG_UNINSTALL.commands
+                return False
+
+        return filter(get_uninstall_targets, sys.argv)
 
     def update_targets(self):
         accept = False
