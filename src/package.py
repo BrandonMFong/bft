@@ -3,6 +3,7 @@ __date__ = "12/31/24"
 
 import tarfile
 import dmglib
+import shutil
 
 from log import *
 

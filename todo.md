@@ -2,6 +2,7 @@
 - [ ] improve list without fetching remote site
 - [ ] include packages from other developers
 - [ ] install specific versions
+- [ ] when downloading dmg, logic should be able to eject the dmg attached volume
 
 **0.1**
 - [x] verbose argument
