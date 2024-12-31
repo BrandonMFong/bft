@@ -1,0 +1,126 @@
+#!/usr/bin/python3
+
+__author__ = "brando"
+__date__ = "12/2/24"
+
+import sys
+import os
+import requests
+import json
+
+from arguments import *
+from utils import *
+from log import *
+from bucket import *
+
+def install_exec():
+    """
+    does installation
+    """
+    debug_print("installing...")
+    debug_print("bucket to install {}".format(ARGS.install_targets))
+ 
+    pool_dir = get_pool_dir()
+    create_dir(pool_dir)
+
+    for bucket_name in ARGS.install_targets():
+        remote_bucket = Bucket(bucket_name)
+      
+        if remote_bucket.is_installed(pool_dir):
+            bft_print("{} is already installed".format(remote_bucket.name()))
+            continue
+
+        debug_print("not installed so we are going to fetch")
+        remote_bucket.fetch()
+        debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
+ 
+        remote_bucket.download(pool_dir)
+
+        remote_bucket.save(pool_dir)
+
+        bft_print("installed {}".format(bucket_name))
+
+def list_exec_print_bucket(name, is_installed):
+    bft_print("{} {}".format(name, "(installed)" if is_installed else ""))
+
+def list_exec():
+    """
+    lists available buckets and if they are installed
+    """
+    debug_print("listing...")
+    pool_dir = get_pool_dir()
+
+    # fetch the repo tree
+    url = bft_api_list_repo()
+    headers = {'Cache-Control': 'no-cache'}
+    response = requests.get(url, headers=headers)
+    if response.status_code != requests.codes.ok:
+        response.raise_for_status()
+
+    repo_tree_json = response.json()
+    debug_print("raw bft-buckets repo tree:")
+    debug_print(json.dumps(repo_tree_json, indent=4))
+
+    debug_print("going through the buckets directory from remote repo")
+    for item in repo_tree_json["tree"]:
+        path = item["path"]
+        if os.path.dirname(path) == "buckets":
+            debug_print("relative path: '{}'".format(path))
+            bucket_name = os.path.basename(path)
+            bucket_name = os.path.splitext(bucket_name)[0]
+            debug_print("  file name: '{}'".format(bucket_name))
+
+            remote_bucket = Bucket(bucket_name)
+            list_exec_print_bucket(
+                remote_bucket.name(),
+                remote_bucket.is_installed(pool_dir)
+            )
+
+def update_exec():
+    """
+    performs an update on the update targets
+
+    we perform an update by doing things similar to
+    installation: download and save. Essentially
+    overwriting the content
+    """
+    debug_print("updating...")
+    pool_dir = get_pool_dir()
+    create_dir(pool_dir)
+
+    for bucket_name in ARGS.update_targets():
+        remote_bucket = Bucket(bucket_name)
+      
+        if remote_bucket.is_installed(pool_dir) is False:
+            bft_print(
+                "{} - not installed".format(
+                    remote_bucket.name()
+            ))
+            continue
+
+        debug_print("bucket is installed so we will fetch from remote for updated data")
+        remote_bucket.fetch()
+        debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
+ 
+        if remote_bucket.can_update(pool_dir):
+            remote_bucket.download(pool_dir)
+            remote_bucket.save(pool_dir)
+            bft_print("{} - updated".format(bucket_name))
+        else:
+            bft_print("{} - up to date".format(
+                remote_bucket.name()
+            ))
+
+def main():
+    if ARGS.show_help():
+        Arguments.print_help()
+    elif ARGS.do_install():
+        install_exec()
+    elif ARGS.do_update():
+        update_exec()
+    elif ARGS.do_list():
+        list_exec()
+
+if __name__ == "__main__":
+    main()
+

@@ -1,17 +1,20 @@
 **x.x**
-- [ ] verbose argument
 - [ ] improve list without fetching remote site
 - [ ] include packages from other developers
+- [ ] install specific versions
 
 **0.1**
+- [x] verbose argument
 - [x] install a package
 	- [x] download from given url
 	- [x] read release version from the url
 	- [x] download binary to an output folder
 	- [x] install other tools
 	- [x] support macos
-- [ ] tool update <bucket>
-	- [ ] check for updates
+- [x] tool update <bucket>
+	- [x] check for updates
+- [ ] uninstall
+- [ ] [authenticate user](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
 - [x] ability to list available packages
 - [x] make a separate repo as a registry
 
