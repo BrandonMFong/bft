@@ -6,6 +6,15 @@ import os
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+ 
+def create_dir(d):
+    """
+    creates directory if it doesn't exist
+    """
+    try:
+        os.mkdir(d)
+    except:
+        pass
 
 def get_pool_dir():
     return os.path.join(SCRIPT_PATH, "../pool")
