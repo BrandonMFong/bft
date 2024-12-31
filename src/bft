@@ -25,18 +25,6 @@ def debug_print(buf):
     if ARGS.debug_print():
         print("bft_debug> {}".format(buf))
 
-def bft_reg_url():
-    """
-    raw root folder to buckets
-    """
-    return "https://raw.githubusercontent.com/BrandonMFong/bft-buckets/refs/heads/dev/buckets/"
-
-def bft_api_list_repo():
-    """
-    https://docs.github.com/en/rest/git/trees?apiVersion=2022-11-28#get-a-tree
-    """
-    return "https://api.github.com/repos/BrandonMFong/bft-buckets/git/trees/dev?recursive=1"
-
 class Package():
     """
     The package file that gets downloaded from download entry
