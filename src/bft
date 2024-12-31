@@ -14,16 +14,7 @@ import dmglib
 
 from arguments import *
 from utils import *
-
-def bft_print(buf):
-    print("{}".format(buf))
-
-def debug_print(buf):
-    """
-    conditional print on verbose flag
-    """
-    if ARGS.debug_print():
-        print("bft_debug> {}".format(buf))
+from log import *
 
 class Package():
     """
@@ -393,8 +384,6 @@ def update_exec():
             ))
 
 def main():
-    #args = Arguments()
-    
     if ARGS.show_help():
         Arguments.print_help()
     elif ARGS.do_install():
