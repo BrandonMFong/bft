@@ -11,7 +11,7 @@
 	- [x] download binary to an output folder
 	- [x] install other tools
 	- [x] support macos
-- [ ] tool update <bucket>
+- [x] tool update <bucket>
 	- [x] check for updates
 - [ ] uninstall
 - [ ] [authenticate user](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
