@@ -47,6 +47,20 @@ def uninstall_exec():
     shouldn't require any remote requests
     """
     debug_print("uninstalling...")
+ 
+    pool_dir = get_pool_dir()
+    create_dir(pool_dir)
+
+    for bucket_name in ARGS.install_targets():
+        remote_bucket = Bucket(bucket_name)
+      
+        if remote_bucket.is_installed(pool_dir) is False:
+            bft_print("{} is not installed".format(remote_bucket.name()))
+            continue
+
+        remote_bucket.remove(pool_dir)
+
+        bft_print("uninstalled {}".format(bucket_name))
 
 def list_exec_print_bucket(name, is_installed):
     bft_print("{} {}".format(name, "(installed)" if is_installed else ""))

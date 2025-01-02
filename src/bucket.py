@@ -118,6 +118,12 @@ class Bucket():
         """
         return self._meta.url_package()
 
+    def remove(self, pool_dir):
+        """
+        removes bucket from pool
+        """
+        debug_print("removing bucket")
+
     def download(self, pool_dir):
         """
         downloads the package

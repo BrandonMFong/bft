@@ -4,6 +4,7 @@
 - [ ] install specific versions
 - [ ] when downloading dmg, logic should be able to eject the dmg attached volume
 - [ ] [authenticate user](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
+- [ ] improve flag arguments so flags can be passed like `-afv`
 
 **0.1**
 - [x] verbose argument
