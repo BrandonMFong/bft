@@ -40,6 +40,14 @@ def install_exec():
 
         bft_print("installed {}".format(bucket_name))
 
+def uninstall_exec():
+    """
+    does uninstallation
+
+    shouldn't require any remote requests
+    """
+    debug_print("uninstalling...")
+
 def list_exec_print_bucket(name, is_installed):
     bft_print("{} {}".format(name, "(installed)" if is_installed else ""))
 
@@ -116,6 +124,8 @@ def main():
         Arguments.print_help()
     elif ARGS.do_install():
         install_exec()
+    elif ARGS.do_uninstall():
+        uninstall_exec()
     elif ARGS.do_update():
         update_exec()
     elif ARGS.do_list():

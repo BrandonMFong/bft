@@ -3,6 +3,7 @@
 - [ ] include packages from other developers
 - [ ] install specific versions
 - [ ] when downloading dmg, logic should be able to eject the dmg attached volume
+- [ ] [authenticate user](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
 
 **0.1**
 - [x] verbose argument
@@ -15,7 +16,6 @@
 - [x] tool update <bucket>
 	- [x] check for updates
 - [ ] uninstall
-- [ ] [authenticate user](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
 - [x] ability to list available packages
 - [x] make a separate repo as a registry
 
