@@ -14,18 +14,18 @@ class BucketMeta():
     """
     Handles parsing the bucket recipe
     """
-    def __init__(self, bucket_file_url):
-        self._bucket_file_url = bucket_file_url
+    def __init__(self, bucket_file_name):
+        self._bucket_file_name = bucket_file_name
 
     def bucket_file_name(self):
-        return os.path.basename(self._bucket_file_url)
+        return self._bucket_file_name
 
     def get_meta(self):
         """
         compiles all the meta data from the bft-buckets buckets directory and
         every buckets' meta url
         """
-        url = os.path.join(bft_reg_url(), self._bucket_file_url)
+        url = os.path.join(bft_reg_url(), self._bucket_file_name)
         debug_print("downloading bucket description from url {}".format(url))
         headers = {'Cache-Control': 'no-cache'}
         response = requests.get(url, headers=headers)
@@ -132,7 +132,6 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            #os.path.basename(self._meta.bucket_file_url())
             self._meta.bucket_file_name()
         )
 
@@ -210,7 +209,6 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            #os.path.basename(self._meta.bucket_file_url())
             self._meta.bucket_file_name()
         )
 
@@ -234,7 +232,6 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            #os.path.basename(self._meta.bucket_file_url())
             self._meta.bucket_file_name()
         )
 
@@ -250,7 +247,6 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            #os.path.basename(self._meta.bucket_file_url())
             self._meta.bucket_file_name()
         )
 
