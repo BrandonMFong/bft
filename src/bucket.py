@@ -20,6 +20,38 @@ class BucketMeta():
     def bucket_file_name(self):
         return self._bucket_file_name
 
+    def get_meta_local(self, pool_dir):
+        """
+        reads the bucket file in the .installed folder
+        """
+        debug_print("reading local bucket file")
+
+        if pool_dir is None:
+            raise Exception("pool_dir is None, please pass a value for pool_dir")
+
+        installed_dir = os.path.join(pool_dir, ".installed")
+        create_dir(installed_dir)
+        debug_print("looking into installed dir '{}' for bucket file".format(installed_dir))
+
+        meta_bucket_json_file = os.path.join(
+            installed_dir,
+            self.bucket_file_name()
+        )
+
+        debug_print("does '{}' exist".format(meta_bucket_json_file))
+        if os.path.isfile(meta_bucket_json_file) is False:
+            raise Exception("{} does not exist. Is this even installed?".format(
+                meta_bucket_json_file
+            ))
+
+        debug_print("yes")
+
+        with open(meta_bucket_json_file, 'r') as f:
+            self._meta_bucket = json.load(f)
+            debug_print("meta bucket dump:\n{}".format(
+                json.dumps(self._meta_bucket, indent=4
+            )))
+
     def get_meta_remote(self):
         """
         compiles all the meta data from the bft-buckets buckets directory and
@@ -41,7 +73,6 @@ class BucketMeta():
         debug_print("downloading bucket metadata from url {}".format(meta_url))
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
-
 
         debug_print("meta data:")
         self._meta_github_release = response.json()
@@ -90,19 +121,16 @@ class Bucket():
     """
     def __init__(self, name):
         self._name = name
-
-        # I wonder if I can make BucketMeta read a local file
-        #self._meta = BucketMeta(bft_reg_url() + self._name + ".json")
         self._meta = BucketMeta(self._name + ".json")
 
-    def fetch(self, get_remote=False, get_local=False):
+    def fetch(self, get_remote=False, get_local=False, pool_dir=None):
         """
         fetches remote data
         """
         if get_remote:
             self._meta.get_meta_remote()
         elif get_local:
-            pass
+            self._meta.get_meta_local(pool_dir)
         else:
             raise Exception("you must pass get_remote or get_local value")
 
@@ -132,23 +160,6 @@ class Bucket():
         removes bucket from pool
         """
         debug_print("removing bucket")
-        installed_dir = os.path.join(pool_dir, ".installed")
-        create_dir(installed_dir)
-        debug_print("looking into installed dir '{}' for bucket file".format(installed_dir))
-
-        meta_bucket_json_file = os.path.join(
-            installed_dir,
-            self._meta.bucket_file_name()
-        )
-
-        if os.path.isfile(meta_bucket_json_file) is False:
-            raise Exception("{} does not exist. Is this even installed?".format(
-                meta_bucket_json_file
-            ))
-
-        with open(meta_bucket_json_file, 'r') as f:
-            data = json.load(f)
-
 
     def download(self, pool_dir):
         """
