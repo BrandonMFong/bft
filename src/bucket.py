@@ -17,15 +17,15 @@ class BucketMeta():
     def __init__(self, bucket_file_url):
         self._bucket_file_url = bucket_file_url
 
-    def bucket_file_url(self):
-        return self._bucket_file_url
+    def bucket_file_name(self):
+        return os.path.basename(self._bucket_file_url)
 
     def get_meta(self):
         """
         compiles all the meta data from the bft-buckets buckets directory and
         every buckets' meta url
         """
-        url = self._bucket_file_url
+        url = os.path.join(bft_reg_url(), self._bucket_file_url)
         debug_print("downloading bucket description from url {}".format(url))
         headers = {'Cache-Control': 'no-cache'}
         response = requests.get(url, headers=headers)
@@ -90,7 +90,10 @@ class Bucket():
     """
     def __init__(self, name):
         self._name = name
-        self._meta = BucketMeta(bft_reg_url() + self._name + ".json")
+
+        # I wonder if I can make BucketMeta read a local file
+        #self._meta = BucketMeta(bft_reg_url() + self._name + ".json")
+        self._meta = BucketMeta(self._name + ".json")
 
     def fetch(self):
         """
@@ -123,6 +126,24 @@ class Bucket():
         removes bucket from pool
         """
         debug_print("removing bucket")
+        installed_dir = os.path.join(pool_dir, ".installed")
+        create_dir(installed_dir)
+        debug_print("looking into installed dir '{}' for bucket file".format(installed_dir))
+
+        meta_bucket_json_file = os.path.join(
+            installed_dir,
+            #os.path.basename(self._meta.bucket_file_url())
+            self._meta.bucket_file_name()
+        )
+
+        if os.path.isfile(meta_bucket_json_file) is False:
+            raise Exception("{} does not exist. Is this even installed?".format(
+                meta_bucket_json_file
+            ))
+
+        with open(meta_bucket_json_file, 'r') as f:
+            data = json.load(f)
+
 
     def download(self, pool_dir):
         """
@@ -189,7 +210,8 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            os.path.basename(self._meta.bucket_file_url())
+            #os.path.basename(self._meta.bucket_file_url())
+            self._meta.bucket_file_name()
         )
 
         meta_bucket_json_content = json.dumps(
@@ -212,7 +234,8 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            os.path.basename(self._meta.bucket_file_url())
+            #os.path.basename(self._meta.bucket_file_url())
+            self._meta.bucket_file_name()
         )
 
         return os.path.isfile(meta_bucket_json_file)
@@ -227,7 +250,8 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            os.path.basename(self._meta.bucket_file_url())
+            #os.path.basename(self._meta.bucket_file_url())
+            self._meta.bucket_file_name()
         )
 
         if os.path.isfile(meta_bucket_json_file) is False:

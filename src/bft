@@ -51,7 +51,7 @@ def uninstall_exec():
     pool_dir = get_pool_dir()
     create_dir(pool_dir)
 
-    for bucket_name in ARGS.install_targets():
+    for bucket_name in ARGS.uninstall_targets():
         remote_bucket = Bucket(bucket_name)
       
         if remote_bucket.is_installed(pool_dir) is False:
