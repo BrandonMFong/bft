@@ -31,7 +31,7 @@ def install_exec():
             continue
 
         debug_print("not installed so we are going to fetch")
-        remote_bucket.fetch()
+        remote_bucket.fetch(get_remote=True)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
  
         remote_bucket.download(pool_dir)
@@ -121,7 +121,7 @@ def update_exec():
             continue
 
         debug_print("bucket is installed so we will fetch from remote for updated data")
-        remote_bucket.fetch()
+        remote_bucket.fetch(get_remote=True)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
  
         if remote_bucket.can_update(pool_dir):

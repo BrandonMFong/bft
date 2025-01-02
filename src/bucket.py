@@ -20,7 +20,7 @@ class BucketMeta():
     def bucket_file_name(self):
         return self._bucket_file_name
 
-    def get_meta(self):
+    def get_meta_remote(self):
         """
         compiles all the meta data from the bft-buckets buckets directory and
         every buckets' meta url
@@ -95,11 +95,17 @@ class Bucket():
         #self._meta = BucketMeta(bft_reg_url() + self._name + ".json")
         self._meta = BucketMeta(self._name + ".json")
 
-    def fetch(self):
+    def fetch(self, get_remote=False, get_local=False):
         """
         fetches remote data
         """
-        self._meta.get_meta()
+        if get_remote:
+            self._meta.get_meta_remote()
+        elif get_local:
+            pass
+        else:
+            raise Exception("you must pass get_remote or get_local value")
+
 
     def tag_name(self):
         """
