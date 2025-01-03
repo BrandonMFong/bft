@@ -18,11 +18,14 @@ ARG_UNINSTALL = Argument(["uninstall"], "uninstalls tool")
 ARG_LIST = Argument(["list"], "lists available and installed content")
 ARG_UPDATE = Argument(["update"], "updates target bucket")
 ARG_HELP = Argument(["help", "-h", "--help", "-help"], "shows help")
-ARG_VERBOSE = Argument(["-v"], "shows more logging")
+ARG_DEBUG_PRINT = Argument(["-d"], "shows debug logging")
 
 class Arguments():
     def print_help():
-        print("usage: {} <command> [<args>]".format(SCRIPT_NAME))
+        print("usage: {} [<flags>] <command> [<args>]".format(SCRIPT_NAME))
+        print()
+        print("flags:")
+        print("  {}\t{}".format(ARG_DEBUG_PRINT.commands[0], ARG_DEBUG_PRINT.description))
         print()
         print("command:")
         print(" {}\t{}".format(ARG_INSTALL.commands[0], ARG_INSTALL.description)) 
@@ -52,7 +55,7 @@ class Arguments():
                 self._list = True
             elif arg in ARG_HELP.commands:
                 self._show_help = True
-            elif arg in ARG_VERBOSE.commands:
+            elif arg in ARG_DEBUG_PRINT.commands:
                 self._debug_print = True 
 
     def show_help(self):

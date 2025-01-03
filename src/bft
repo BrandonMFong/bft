@@ -31,7 +31,7 @@ def install_exec():
             continue
 
         debug_print("not installed so we are going to fetch")
-        remote_bucket.fetch()
+        remote_bucket.fetch(get_remote=True)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
  
         remote_bucket.download(pool_dir)
@@ -39,6 +39,30 @@ def install_exec():
         remote_bucket.save(pool_dir)
 
         bft_print("installed {}".format(bucket_name))
+
+def uninstall_exec():
+    """
+    does uninstallation
+
+    shouldn't require any remote requests
+    """
+    debug_print("uninstalling...")
+ 
+    pool_dir = get_pool_dir()
+    create_dir(pool_dir)
+
+    for bucket_name in ARGS.uninstall_targets():
+        local_bucket = Bucket(bucket_name)
+      
+        if local_bucket.is_installed(pool_dir) is False:
+            bft_print("{} is not installed".format(local_bucket.name()))
+            continue
+
+        local_bucket.fetch(get_local=True, pool_dir=pool_dir)
+
+        local_bucket.remove(pool_dir)
+
+        bft_print("uninstalled {}".format(bucket_name))
 
 def list_exec_print_bucket(name, is_installed):
     bft_print("{} {}".format(name, "(installed)" if is_installed else ""))
@@ -99,7 +123,7 @@ def update_exec():
             continue
 
         debug_print("bucket is installed so we will fetch from remote for updated data")
-        remote_bucket.fetch()
+        remote_bucket.fetch(get_remote=True)
         debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
  
         if remote_bucket.can_update(pool_dir):
@@ -116,6 +140,8 @@ def main():
         Arguments.print_help()
     elif ARGS.do_install():
         install_exec()
+    elif ARGS.do_uninstall():
+        uninstall_exec()
     elif ARGS.do_update():
         update_exec()
     elif ARGS.do_list():

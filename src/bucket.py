@@ -5,6 +5,7 @@ import requests
 import json
 import shutil
 import platform
+import pathlib
 
 from package import *
 from utils import *
@@ -14,18 +15,57 @@ class BucketMeta():
     """
     Handles parsing the bucket recipe
     """
-    def __init__(self, bucket_file_url):
-        self._bucket_file_url = bucket_file_url
+    def __init__(self, bucket_file_name):
+        self._bucket_file_name = bucket_file_name
 
-    def bucket_file_url(self):
-        return self._bucket_file_url
+        # remote work: modified by Bucket
+        # local work: modified by get_meta_local
+        self.installed_assets = []
 
-    def get_meta(self):
+    def bucket_file_name(self):
+        return self._bucket_file_name
+
+    def get_meta_local(self, pool_dir):
+        """
+        reads the bucket file in the .installed folder
+        """
+        debug_print("reading local bucket file")
+
+        if pool_dir is None:
+            raise Exception("pool_dir is None, please pass a value for pool_dir")
+
+        installed_dir = os.path.join(pool_dir, ".installed")
+        create_dir(installed_dir)
+        debug_print("looking into installed dir '{}' for bucket file".format(installed_dir))
+
+        meta_bucket_json_file = os.path.join(
+            installed_dir,
+            self.bucket_file_name()
+        )
+
+        debug_print("does '{}' exist".format(meta_bucket_json_file))
+        if os.path.isfile(meta_bucket_json_file) is False:
+            raise Exception("{} does not exist. Is this even installed?".format(
+                meta_bucket_json_file
+            ))
+
+        debug_print("yes")
+
+        with open(meta_bucket_json_file, 'r') as f:
+            self._meta_bucket = json.load(f)
+            debug_print("meta bucket dump:\n{}".format(
+                json.dumps(self._meta_bucket, indent=4
+            )))
+        
+        self._meta_github_release = self._meta_bucket["installed"]["meta_github_release"]
+        self.installed_assets = self._meta_bucket["installed"]["assets"]
+
+    def get_meta_remote(self):
         """
         compiles all the meta data from the bft-buckets buckets directory and
         every buckets' meta url
         """
-        url = self._bucket_file_url
+        url = os.path.join(bft_reg_url(), self._bucket_file_name)
         debug_print("downloading bucket description from url {}".format(url))
         headers = {'Cache-Control': 'no-cache'}
         response = requests.get(url, headers=headers)
@@ -41,7 +81,6 @@ class BucketMeta():
         debug_print("downloading bucket metadata from url {}".format(meta_url))
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
-
 
         debug_print("meta data:")
         self._meta_github_release = response.json()
@@ -59,6 +98,9 @@ class BucketMeta():
         returns tag_name from the github latest release api
         """
         return self._meta_github_release["tag_name"]
+
+    def meta_github_release(self):
+        return self._meta_github_release
 
     def __platform(self):
         """
@@ -90,13 +132,18 @@ class Bucket():
     """
     def __init__(self, name):
         self._name = name
-        self._meta = BucketMeta(bft_reg_url() + self._name + ".json")
+        self._meta = BucketMeta(self._name + ".json")
 
-    def fetch(self):
+    def fetch(self, get_remote=False, get_local=False, pool_dir=None):
         """
         fetches remote data
         """
-        self._meta.get_meta()
+        if get_remote:
+            self._meta.get_meta_remote()
+        elif get_local:
+            self._meta.get_meta_local(pool_dir)
+        else:
+            raise Exception("you must pass get_remote or get_local value")
 
     def tag_name(self):
         """
@@ -117,6 +164,36 @@ class Bucket():
         the url entry under meta
         """
         return self._meta.url_package()
+
+    def remove(self, pool_dir):
+        """
+        removes bucket from pool
+        """
+        debug_print("removing bucket")
+
+        # TODO: figure out how we can find where the installation is
+        # should we store where we installed the application in the installed dict?
+
+        # deletes assets
+        for asset in self._meta.installed_assets:
+            debug_print("removing {}".format(asset))
+            if os.path.isdir(asset):
+                shutil.rmtree(asset)
+            else:
+                pathlib.Path(asset).unlink()
+
+        # deletes the install file
+        installed_dir = os.path.join(pool_dir, ".installed")
+        create_dir(installed_dir)
+        debug_print("saving bucket into dir {}".format(installed_dir))
+
+        meta_bucket_json_file = os.path.join(
+            installed_dir,
+            self._meta.bucket_file_name()
+        )
+
+        debug_print("removing {}".format(meta_bucket_json_file))
+        pathlib.Path(meta_bucket_json_file).unlink()
 
     def download(self, pool_dir):
         """
@@ -154,12 +231,14 @@ class Bucket():
         bucket_pkg = Package(tmp_file)
         bucket_pkg.extract(tmp_dir)
         bin_dir = os.path.join(pool_dir, "bin")
+        bin_dir = os.path.abspath(bin_dir)
         create_dir(bin_dir)
         for item in self._meta.package_items():
             src = os.path.join(tmp_dir, item)
             dest = os.path.join(bin_dir, os.path.basename(item))
             debug_print("{} -> {}".format(src, dest))
             os.rename(src, dest)
+            self._meta.installed_assets.append(dest)
 
     def __meta_bucket_saved_content(self):
         """
@@ -167,7 +246,11 @@ class Bucket():
         """
         res = self._meta.meta_bucket()
 
-        res["installed"] = {"tag_name" : self.tag_name()}
+        res["installed"] = {
+            "tag_name" : self.tag_name(),
+            "assets" : self._meta.installed_assets,
+            "meta_github_release" : self._meta.meta_github_release()
+        }
 
         return res
 
@@ -183,7 +266,7 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            os.path.basename(self._meta.bucket_file_url())
+            self._meta.bucket_file_name()
         )
 
         meta_bucket_json_content = json.dumps(
@@ -206,7 +289,7 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            os.path.basename(self._meta.bucket_file_url())
+            self._meta.bucket_file_name()
         )
 
         return os.path.isfile(meta_bucket_json_file)
@@ -221,7 +304,7 @@ class Bucket():
 
         meta_bucket_json_file = os.path.join(
             installed_dir,
-            os.path.basename(self._meta.bucket_file_url())
+            self._meta.bucket_file_name()
         )
 
         if os.path.isfile(meta_bucket_json_file) is False:
