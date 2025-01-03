@@ -127,6 +127,7 @@ class Bucket():
     def __init__(self, name):
         self._name = name
         self._meta = BucketMeta(self._name + ".json")
+        self._installed_assets = []
 
     def fetch(self, get_remote=False, get_local=False, pool_dir=None):
         """
@@ -138,7 +139,6 @@ class Bucket():
             self._meta.get_meta_local(pool_dir)
         else:
             raise Exception("you must pass get_remote or get_local value")
-
 
     def tag_name(self):
         """
@@ -212,12 +212,12 @@ class Bucket():
             debug_print("{} -> {}".format(src, dest))
             os.rename(src, dest)
 
-    def __get_installed_assets(self):
+    def __installed_assets(self):
         """
         returns an array relative paths of installed assets in the pool dir
         """
         debug_print("gathering the assets array")
-        return []
+        return self._installed_assets
 
     def __meta_bucket_saved_content(self):
         """
@@ -227,7 +227,7 @@ class Bucket():
 
         res["installed"] = {
             "tag_name" : self.tag_name(),
-            "assets" : self.__get_installed_assets(),
+            "assets" : self.__installed_assets(),
             "meta_github_release" : self._meta.meta_github_release()
         }
 
