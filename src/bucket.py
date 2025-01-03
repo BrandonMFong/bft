@@ -16,6 +16,7 @@ class BucketMeta():
     """
     def __init__(self, bucket_file_name):
         self._bucket_file_name = bucket_file_name
+        self.installed_assets = []
 
     def bucket_file_name(self):
         return self._bucket_file_name
@@ -127,7 +128,6 @@ class Bucket():
     def __init__(self, name):
         self._name = name
         self._meta = BucketMeta(self._name + ".json")
-        self._installed_assets = []
 
     def fetch(self, get_remote=False, get_local=False, pool_dir=None):
         """
@@ -212,14 +212,7 @@ class Bucket():
             dest = os.path.join(bin_dir, os.path.basename(item))
             debug_print("{} -> {}".format(src, dest))
             os.rename(src, dest)
-            self._installed_assets.append(dest)
-
-    def __installed_assets(self):
-        """
-        returns an array relative paths of installed assets in the pool dir
-        """
-        debug_print("gathering the assets array")
-        return self._installed_assets
+            self._meta.installed_assets.append(dest)
 
     def __meta_bucket_saved_content(self):
         """
@@ -229,7 +222,7 @@ class Bucket():
 
         res["installed"] = {
             "tag_name" : self.tag_name(),
-            "assets" : self.__installed_assets(),
+            "assets" : self._meta.installed_assets,
             "meta_github_release" : self._meta.meta_github_release()
         }
 
