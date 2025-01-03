@@ -212,6 +212,13 @@ class Bucket():
             debug_print("{} -> {}".format(src, dest))
             os.rename(src, dest)
 
+    def __get_installed_assets(self):
+        """
+        returns an array relative paths of installed assets in the pool dir
+        """
+        debug_print("gathering the assets array")
+        return []
+
     def __meta_bucket_saved_content(self):
         """
         adds an 'installed' entry to cache some meta data before we fetch it
@@ -220,6 +227,7 @@ class Bucket():
 
         res["installed"] = {
             "tag_name" : self.tag_name(),
+            "assets" : self.__get_installed_assets(),
             "meta_github_release" : self._meta.meta_github_release()
         }
 
