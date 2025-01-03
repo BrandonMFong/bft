@@ -205,12 +205,14 @@ class Bucket():
         bucket_pkg = Package(tmp_file)
         bucket_pkg.extract(tmp_dir)
         bin_dir = os.path.join(pool_dir, "bin")
+        bin_dir = os.path.abspath(bin_dir)
         create_dir(bin_dir)
         for item in self._meta.package_items():
             src = os.path.join(tmp_dir, item)
             dest = os.path.join(bin_dir, os.path.basename(item))
             debug_print("{} -> {}".format(src, dest))
             os.rename(src, dest)
+            self._installed_assets.append(dest)
 
     def __installed_assets(self):
         """
