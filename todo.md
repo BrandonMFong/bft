@@ -6,6 +6,7 @@
 - [ ] [authenticate user](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
 - [ ] improve flag arguments so flags can be passed like `-afv`
 - make an easy installation process that can be called using something like `curl bft-install.brandonmfong.com | bash`
+- [ ] add more data to the bucket files like author and descriptions
 
 **0.1**
 - [x] verbose argument
