@@ -5,6 +5,7 @@ import requests
 import json
 import shutil
 import platform
+import pathlib
 
 from package import *
 from utils import *
@@ -16,6 +17,9 @@ class BucketMeta():
     """
     def __init__(self, bucket_file_name):
         self._bucket_file_name = bucket_file_name
+
+        # remote work: modified by Bucket
+        # local work: modified by get_meta_local
         self.installed_assets = []
 
     def bucket_file_name(self):
@@ -54,6 +58,7 @@ class BucketMeta():
             )))
         
         self._meta_github_release = self._meta_bucket["installed"]["meta_github_release"]
+        self.installed_assets = self._meta_bucket["installed"]["assets"]
 
     def get_meta_remote(self):
         """
@@ -168,6 +173,27 @@ class Bucket():
 
         # TODO: figure out how we can find where the installation is
         # should we store where we installed the application in the installed dict?
+
+        # deletes assets
+        for asset in self._meta.installed_assets:
+            debug_print("removing {}".format(asset))
+            if os.path.isdir(asset):
+                shutil.rmtree(asset)
+            else:
+                pathlib.Path(asset).unlink()
+
+        # deletes the install file
+        installed_dir = os.path.join(pool_dir, ".installed")
+        create_dir(installed_dir)
+        debug_print("saving bucket into dir {}".format(installed_dir))
+
+        meta_bucket_json_file = os.path.join(
+            installed_dir,
+            self._meta.bucket_file_name()
+        )
+
+        debug_print("removing {}".format(meta_bucket_json_file))
+        pathlib.Path(meta_bucket_json_file).unlink()
 
     def download(self, pool_dir):
         """
