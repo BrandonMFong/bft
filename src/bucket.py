@@ -51,6 +51,8 @@ class BucketMeta():
             debug_print("meta bucket dump:\n{}".format(
                 json.dumps(self._meta_bucket, indent=4
             )))
+        
+        self._meta_github_release = self._meta_bucket["installed"]["meta_github_release"]
 
     def get_meta_remote(self):
         """
@@ -90,6 +92,9 @@ class BucketMeta():
         returns tag_name from the github latest release api
         """
         return self._meta_github_release["tag_name"]
+
+    def meta_github_release(self):
+        return self._meta_github_release
 
     def __platform(self):
         """
@@ -161,6 +166,9 @@ class Bucket():
         """
         debug_print("removing bucket")
 
+        # TODO: figure out how we can find where the installation is
+        # should we store where we installed the application in the installed dict?
+
     def download(self, pool_dir):
         """
         downloads the package
@@ -210,7 +218,10 @@ class Bucket():
         """
         res = self._meta.meta_bucket()
 
-        res["installed"] = {"tag_name" : self.tag_name()}
+        res["installed"] = {
+            "tag_name" : self.tag_name(),
+            "meta_github_release" : self._meta.meta_github_release()
+        }
 
         return res
 
