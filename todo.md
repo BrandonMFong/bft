@@ -19,7 +19,7 @@
 	- [x] support macos
 - [x] tool update <bucket>
 	- [x] check for updates
-- [ ] uninstall
+- [x] uninstall
 - [x] ability to list available packages
 - [x] make a separate repo as a registry
 
