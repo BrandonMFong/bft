@@ -8,6 +8,7 @@
 - make an easy installation process that can be called using something like `curl bft-install.brandonmfong.com | bash`
 - [ ] add more data to the bucket files like author and descriptions
 - [ ] install bft in the home directory like goto?
+- [ ] improve argument parser to detect incorrect arguments
 
 **0.1**
 - [x] verbose argument
