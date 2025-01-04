@@ -9,6 +9,7 @@
 - [ ] add more data to the bucket files like author and descriptions
 - [ ] install bft in the home directory like goto?
 - [ ] improve argument parser to detect incorrect arguments
+- [ ] add install and update progress
 
 **0.1**
 - [x] verbose argument
