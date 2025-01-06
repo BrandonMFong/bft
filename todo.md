@@ -1,17 +1,20 @@
 **x.x**
-- [ ] improve list without fetching remote site
 - [ ] include packages from other developers
 - [ ] install specific versions
-- [ ] when downloading dmg, logic should be able to eject the dmg attached volume
 - [ ] [authenticate user](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
-- [ ] improve flag arguments so flags can be passed like `-afv`
-- make an easy installation process that can be called using something like `curl bft-install.brandonmfong.com | bash`
+- [ ] make an easy installation process that can be called using something like `curl bft-install.brandonmfong.com | bash`
 - [ ] add more data to the bucket files like author and descriptions
-- [ ] install bft in the home directory like goto?
-- [ ] improve argument parser to detect incorrect arguments
 - [ ] add install and update progress
 
+**0.2**
+- [ ] apply standard python packaging layout
+	- [ ] install bft in the home directory like goto?
+- [ ] improve argument parser to detect incorrect arguments
+- [ ] improve flag arguments so flags can be passed like `-afv`
+- [ ] when downloading dmg, logic should be able to eject the dmg attached volume
+
 **0.1**
+- [x] improve list without fetching remote site
 - [x] verbose argument
 - [x] install a package
 	- [x] download from given url
