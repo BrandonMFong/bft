@@ -12,6 +12,7 @@
 - [ ] improve argument parser to detect incorrect arguments
 - [ ] improve flag arguments so flags can be passed like `-afv`
 - [ ] when downloading dmg, logic should be able to eject the dmg attached volume
+- [ ] catch unknown package
 
 **0.1**
 - [x] improve list without fetching remote site
