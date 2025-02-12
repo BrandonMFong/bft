@@ -214,7 +214,7 @@ class Bucket():
 
         # get the object from url
         # fetch with progress
-        debug_print("fetching {}".format(url))
+        bft_print("fetching {}".format(os.path.basename(url)))
         headers = {'Cache-Control': 'no-cache'}
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
@@ -228,6 +228,7 @@ class Bucket():
             raise Exception("{} is empty".format(tmp_file))
 
         # extract items from package file
+        bft_print("extracting:")
         bucket_pkg = Package(tmp_file)
         bucket_pkg.extract(tmp_dir)
         bin_dir = os.path.join(pool_dir, "bin")
@@ -236,6 +237,7 @@ class Bucket():
         for item in self._meta.package_items():
             src = os.path.join(tmp_dir, item)
             dest = os.path.join(bin_dir, os.path.basename(item))
+            bft_print("  * {}".format(os.path.basename(dest)))
             debug_print("{} -> {}".format(src, dest))
             os.rename(src, dest)
             self._meta.installed_assets.append(dest)

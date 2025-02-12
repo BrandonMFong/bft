@@ -6,13 +6,14 @@
 - [ ] add more data to the bucket files like author and descriptions
 
 **0.2**
-- [ ] add install and update progress
+- [x] add install and update progress
 - [ ] apply standard python packaging layout
 	- [ ] install bft in the home directory like goto?
 - [ ] improve argument parser to detect incorrect arguments
 - [ ] improve flag arguments so flags can be passed like `-afv`
 - [ ] when downloading dmg, logic should be able to eject the dmg attached volume
 - [ ] catch unknown package
+- [ ] add versions for list 
 
 **0.1**
 - [x] improve list without fetching remote site

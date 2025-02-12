@@ -17,7 +17,7 @@ def install_exec():
     """
     does installation
     """
-    debug_print("installing...")
+    bft_print("installing...")
     debug_print("bucket to install {}".format(ARGS.install_targets))
  
     pool_dir = get_pool_dir()
@@ -32,7 +32,7 @@ def install_exec():
 
         debug_print("not installed so we are going to fetch")
         remote_bucket.fetch(get_remote=True)
-        debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
+        bft_print("version: {}".format(remote_bucket.tag_name()))
  
         remote_bucket.download(pool_dir)
 
@@ -71,7 +71,7 @@ def list_exec():
     """
     lists available buckets and if they are installed
     """
-    debug_print("listing...")
+    bft_print("listing...")
     pool_dir = get_pool_dir()
 
     # fetch the repo tree
@@ -124,7 +124,7 @@ def update_exec():
 
         debug_print("bucket is installed so we will fetch from remote for updated data")
         remote_bucket.fetch(get_remote=True)
-        debug_print("remote bucket tag_name: {}".format(remote_bucket.tag_name()))
+        bft_print("new version: {}".format(remote_bucket.tag_name()))
  
         if remote_bucket.can_update(pool_dir):
             remote_bucket.download(pool_dir)
