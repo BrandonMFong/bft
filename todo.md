@@ -4,6 +4,7 @@
 - [ ] [authenticate user](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
 - [ ] make an easy installation process that can be called using something like `curl bft-install.brandonmfong.com | bash`
 - [ ] add more data to the bucket files like author and descriptions
+- [ ] update all option
 
 **0.2**
 - [x] add install and update progress
