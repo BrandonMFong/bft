@@ -19,6 +19,7 @@ ARG_LIST = Argument(["list"], "lists available and installed content")
 ARG_UPDATE = Argument(["update"], "updates target bucket")
 ARG_HELP = Argument(["help", "-h", "--help", "-help"], "shows help")
 ARG_DEBUG_PRINT = Argument(["-d"], "shows debug logging")
+ARG_VERSION = Argument(["-v"], "prints version")
 
 class Arguments():
     def print_help():
@@ -26,6 +27,7 @@ class Arguments():
         print()
         print("flags:")
         print("  {}\t{}".format(ARG_DEBUG_PRINT.commands[0], ARG_DEBUG_PRINT.description))
+        print("  {}\t{}".format(ARG_VERSION.commands[0], ARG_VERSION.description))
         print()
         print("command:")
         print(" {}\t{}".format(ARG_INSTALL.commands[0], ARG_INSTALL.description)) 
@@ -44,6 +46,7 @@ class Arguments():
         self._list = False
         self._show_help = False
         self._debug_print = False
+        self._version = False
         for arg in sys.argv:
             if arg in ARG_INSTALL.commands:
                 self._install = True
@@ -57,6 +60,8 @@ class Arguments():
                 self._show_help = True
             elif arg in ARG_DEBUG_PRINT.commands:
                 self._debug_print = True 
+            elif arg in ARG_VERSION.commands:
+                self._version = True 
 
     def show_help(self):
         return len(sys.argv) == 1 or self._show_help
@@ -111,6 +116,9 @@ class Arguments():
                 return False
 
         return filter(get_update_targets, sys.argv)
+
+    def show_version(self):
+        return self._version
 
 ARGS = Arguments()
 
