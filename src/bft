@@ -12,7 +12,7 @@ from arguments import *
 from utils import *
 from log import *
 from bucket import *
-from version import *
+from bft_version import *
 
 def install_exec():
     """
