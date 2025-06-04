@@ -16,6 +16,7 @@
 - [ ] catch unknown package
 - [ ] add versions for `list` 
 - [ ] shows if tool is updatable in `list`
+- [ ] change `version.py` to `bft_version.py`
 
 **0.1**
 - [x] improve list without fetching remote site
