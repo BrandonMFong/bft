@@ -17,6 +17,7 @@
 - [ ] add versions for `list` 
 - [ ] shows if tool is updatable in `list`
 - [x] change `version.py` to `bft_version.py`
+- [ ] use a python environment. `bft` should be a shell script that envokes the core `bft` tool inside of a virtual environment
 
 **0.1**
 - [x] improve list without fetching remote site
